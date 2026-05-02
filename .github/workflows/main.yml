@@ -4,38 +4,46 @@ on:
   workflow_dispatch:
     inputs:
       agent_name:
-        description: 'tetuko'
+        description: 'Agent Name'
         required: true
         default: 'tetuko'
       agent_description:
-        description: 'tetuko'
+        description: 'Agent Description'
         required: true
         default: 'tetuko AI Agent'
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node Environment
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      - name: Step 1 - Install ClawHub skill
-        run: npx clawhub@latest install verified-agent-identity
+      - name: Install ClawHub Verified Agent Skill
+        run: |
+          npm install -g clawhub
+          npx clawhub install verified-agent-identity
 
-      - name: Install script dependencies
+      - name: Install Dependencies
         run: |
           cd scripts
           npm install
 
-      - name: Step 2 - Create new Ethereum Identity
-        run: node scripts/createNewEthereumIdentity.js
-
-      - name: Step 3 - Link Human to Agent
+      - name: Generate Ethereum Identity
         run: |
-          node scripts/manualLinkHumanToAgent.js --challenge '{"name": "uangdroid", "description": "uangdroid AI Agent"}'
+          node scripts/createNewEthereumIdentity.js
+
+      - name: Link Human to Agent Identity
+        run: |
+          node scripts/manualLinkHumanToAgent.js \
+          --challenge '{"name":"${{ github.event.inputs.agent_name }}","description":"${{ github.event.inputs.agent_description }}"}'
+
+      - name: Verification Complete
+        run: echo "Agent Identity Successfully Verified"
