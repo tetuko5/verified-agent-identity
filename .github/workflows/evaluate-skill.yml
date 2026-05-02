@@ -27,6 +27,7 @@ jobs:
 
       - name: Step 1 - Install ClawHub skill
         run: npx clawhub@latest install verified-agent-identity
+        did:iden3:billions:main:2VpsmFRTvCJUnKZ21sk2jzeS2DYQSAFdRqHKcERgxn
 
       - name: Install script dependencies
         run: |
